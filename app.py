@@ -8,7 +8,7 @@ from draw_highlight import draw_highlight_on_pdf
 from circuit_tracer import build_circuit_graph
 
 # ดึง API Key จากระบบหลังบ้านของ Streamlit
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 llm_model = genai.GenerativeModel('gemini-3.5-flash') # ใช้โมเดลตัวเบาและเร็ว
 
 def extract_intent(user_message):
