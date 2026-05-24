@@ -2,14 +2,14 @@ import streamlit as st
 import re
 import os
 import networkx as nx
-import google.generativeai as genai # เปลี่ยนมาใช้ Gemini API
+from google import genai # เปลี่ยนมาใช้ Gemini API
 
 from draw_highlight import draw_highlight_on_pdf
 from circuit_tracer import build_circuit_graph
 
 # ดึง API Key จากระบบหลังบ้านของ Streamlit
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-llm_model = genai.GenerativeModel('gemini-2.5-flasht') # ใช้โมเดลตัวเบาและเร็ว
+llm_model = genai.GenerativeModel('gemini-3.5-flash') # ใช้โมเดลตัวเบาและเร็ว
 
 def extract_intent(user_message):
     prompt = f"""
