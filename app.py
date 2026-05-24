@@ -9,25 +9,18 @@ from circuit_tracer import build_circuit_graph
 
 # ดึง API Key จากระบบหลังบ้านของ Streamlit
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-llm_model = genai.GenerativeModel('gemini-3.5-flash') # ใช้โมเดลตัวเบาและเร็ว
-
 def extract_intent(user_message):
-    prompt = f"""
-    คุณคือ AI ผู้ช่วยวิศวกร หน้าที่ของคุณคือสกัด 'รหัสอุปกรณ์' (Component ID) จากข้อความ
-    รหัสอุปกรณ์มักจะขึ้นต้นด้วยเครื่องหมาย '-' เช่น -QAB1, -FA1, -PFV1
-    ตอบกลับมาแค่รหัสอุปกรณ์เท่านั้น ห้ามพิมพ์อย่างอื่น
+    prompt = f"สกัดรหัสอุปกรณ์ (เช่น -QAB1) จากข้อความนี้: {user_message}. ตอบแค่รหัสอุปกรณ์เท่านั้น"
     
-    ข้อความจากช่าง: "{user_message}"
-    """
+    # ใช้โมเดลที่เสถียรที่สุดตัวหนึ่งจากลิสต์ที่คุณรันเจอ (gemini-3.5-flash)
+    response = client.models.generate_content(
+        model="gemini-3.5-flash",
+        contents=prompt,
+    )
     
-    try:
-        response = llm_model.generate_content(prompt)
-        extracted_text = response.text.strip()
-        match = re.search(r'-[A-Z0-9]+', extracted_text)
-        return match.group(0) if match else None
-    except Exception as e:
-        print(f"API Error: {e}")
-        return None
+    extracted_text = response.text.strip()
+    match = re.search(r'-[A-Z0-9]+', extracted_text)
+    return match.group(0) if match else None
 
 # --- ส่วนของการสร้างหน้า Web UI ด้วย Streamlit ---
 
