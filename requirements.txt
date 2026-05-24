@@ -1,4 +1,4 @@
 streamlit
 pymupdf
 networkx
-google-generativeai
+google-genai
