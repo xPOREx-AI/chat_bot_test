@@ -1,27 +1,33 @@
 import streamlit as st
-import ollama
 import re
 import os
 import networkx as nx
+import google.generativeai as genai # เปลี่ยนมาใช้ Gemini API
 
-# Import Logic หลักที่เราทำไว้
 from draw_highlight import draw_highlight_on_pdf
 from circuit_tracer import build_circuit_graph
 
+# ดึง API Key จากระบบหลังบ้านของ Streamlit
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+llm_model = genai.GenerativeModel('gemini-1.5-flash') # ใช้โมเดลตัวเบาและเร็ว
+
 def extract_intent(user_message):
-    system_prompt = """
+    prompt = f"""
     คุณคือ AI ผู้ช่วยวิศวกร หน้าที่ของคุณคือสกัด 'รหัสอุปกรณ์' (Component ID) จากข้อความ
     รหัสอุปกรณ์มักจะขึ้นต้นด้วยเครื่องหมาย '-' เช่น -QAB1, -FA1, -PFV1
-    ตอบกลับมาแค่รหัสอุปกรณ์เท่านั้น
-    """
-    response = ollama.chat(model='qwen2.5:7b', messages=[
-        {'role': 'system', 'content': system_prompt},
-        {'role': 'user', 'content': user_message}
-    ])
+    ตอบกลับมาแค่รหัสอุปกรณ์เท่านั้น ห้ามพิมพ์อย่างอื่น
     
-    extracted_text = response['message']['content'].strip()
-    match = re.search(r'-[A-Z0-9]+', extracted_text)
-    return match.group(0) if match else None
+    ข้อความจากช่าง: "{user_message}"
+    """
+    
+    try:
+        response = llm_model.generate_content(prompt)
+        extracted_text = response.text.strip()
+        match = re.search(r'-[A-Z0-9]+', extracted_text)
+        return match.group(0) if match else None
+    except Exception as e:
+        print(f"API Error: {e}")
+        return None
 
 # --- ส่วนของการสร้างหน้า Web UI ด้วย Streamlit ---
 
