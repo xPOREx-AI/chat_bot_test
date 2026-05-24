@@ -9,7 +9,7 @@ from circuit_tracer import build_circuit_graph
 
 # ดึง API Key จากระบบหลังบ้านของ Streamlit
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-llm_model = genai.GenerativeModel('gemini-1.5-flash') # ใช้โมเดลตัวเบาและเร็ว
+llm_model = genai.GenerativeModel('gemini-1.5-flash-latest') # ใช้โมเดลตัวเบาและเร็ว
 
 def extract_intent(user_message):
     prompt = f"""
