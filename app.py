@@ -2,7 +2,7 @@ import streamlit as st
 import re
 import os
 import networkx as nx
-from google import genai # เปลี่ยนมาใช้ Gemini API
+from google import genai 
 
 from draw_highlight import draw_highlight_on_pdf
 from circuit_tracer import build_circuit_graph
